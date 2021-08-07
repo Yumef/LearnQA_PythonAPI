@@ -1,5 +1,6 @@
 import json.decoder
 from requests import Response
+from datetime import datetime
 
 class BaseCase:
     # функция, которая определяет, есть ли куки в ответе и возвращает их:
@@ -17,7 +18,21 @@ class BaseCase:
             response_as_dict = response.json()
         except json.decoder.JSONDecodeError:
             assert False, f"Response is not in JSON format. Response text is '{response.text}"
-
         # если парсинг успешный:
         assert name in response_as_dict, f"resonse JSON doesn`t have key '{name}"
         return response_as_dict[name]
+
+    def prepare_registrations_data(self, email=None):
+        if email is None:    # если email передать (не None), то генерироваться (логика ниже) он не будет
+            base_part = "learnqa"
+            domain = "example.com"
+            random_part = datetime.now().strftime(
+                "%m%d%Y%H%M%S")  # на основе сегодняшней даты, чтобы тесты, запущенные в разное время не создали повторяющиеся данные
+            email = f"{base_part}{random_part}@{domain}"
+        return {
+            'password': '123',
+            'username': 'learnqa',
+            'firstName': 'learnqa',
+            'lastName': 'learnqa',
+            'email': email
+        }
