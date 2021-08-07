@@ -1,11 +1,11 @@
 import pytest
-import requests
+from lib.my_requests import MyRequests
 from lib.base_case import BaseCase
 from lib.assertions import Assertions
 
 class TestUserAuth(BaseCase):
     # для негативных тестов создать параметризованный тест
-    # выносится поверх всех функций, даже если изспользуется позднее
+    # выносится поверх всех функций, даже если используется позднее
     exclude_params = [
         ("no_cookie"),
         ("no_token")
@@ -16,7 +16,7 @@ class TestUserAuth(BaseCase):
             'password': '1234'
         }
         # первый запрос
-        response1 = requests.post("https://playground.learnqa.ru/api/user/login", data=data)
+        response1 = MyRequests.post("/user/login", data=data)
 
         # обратиться к функциям get_cookies и get_header из BaseCase:
         self.auth_sid = self.get_cookies(response1, "auth_sid")
@@ -26,8 +26,8 @@ class TestUserAuth(BaseCase):
     def test_auth_user(self):
 
         # второй запрос
-        response2 = requests.get(
-            "https://playground.learnqa.ru/api/user/auth",
+        response2 = MyRequests.get(
+            "/user/auth",
             headers={"x-csrf-token": self.token},
             cookies={"auth_sid": self.auth_sid}
         )
@@ -43,13 +43,13 @@ class TestUserAuth(BaseCase):
     def test_negative_auth_check(self, condition):
 
         if condition == "no_cookie":
-            response2 = requests.get(
-                "https://playground.learnqa.ru/api/user/auth",
+            response2 = MyRequests.get(
+                "/user/auth",
                 headers={"x-csrf-token": self.token}
             )
         else:
-            response2 = requests.get(
-                "https://playground.learnqa.ru/api/user/auth",
+            response2 = MyRequests.get(
+                "/user/auth",
                 cookies={"auth_sid": self.auth_sid}
             )
 
@@ -60,4 +60,5 @@ class TestUserAuth(BaseCase):
             0,
             f"User is authorised with condition {condition}"
         )
+
 
