@@ -1,6 +1,9 @@
 from lib.my_requests import MyRequests
 from lib.base_case import BaseCase
 from lib.assertions import Assertions
+import allure
+import random
+import time
 
 class TestUserEdit(BaseCase):
 
@@ -29,6 +32,20 @@ class TestUserEdit(BaseCase):
 
 
     # позитивный тест - редактирование авторизованным пользователем самого себя
+    @allure.description_html("""
+    <h1>Html description of test 'Edit authorized user'</h1>
+    <table style="width:100%">
+      <tr>
+        <th>firstName</th>
+        <th>email</th>
+      </tr>
+      <tr align="center">
+        <td>firstName from test data</td>
+        <td>email from test data</td>
+      </tr>
+    </table>
+    """)
+    @allure.severity(allure.severity_level.NORMAL)
     def test_edit_just_created_user(self):
         # EDIT
         new_name = 'Changed Name'
@@ -55,8 +72,8 @@ class TestUserEdit(BaseCase):
             "Wrong name of the user after edit"
         )
 
-
     # негативный тест - редактирование неавторизованным пользователем
+    @allure.severity(allure.severity_level.NORMAL)
     def test_edit_not_auth(self):
         # EDIT
         new_name = 'Changed Name 2'
@@ -67,6 +84,8 @@ class TestUserEdit(BaseCase):
 
 
     # негативный тест - редактирование другим пользователем
+    @allure.issue('https://company.atlassian.net/browse/1614', 'Запрет на редактирование других юзеров')
+    @allure.severity(allure.severity_level.CRITICAL)
     def test_edit_other_user(self):
         # EDIT
         new_name = 'Changed Name 4'
@@ -96,6 +115,7 @@ class TestUserEdit(BaseCase):
 
 
     # негативный тест - редактирование авторизованным пользователем самого себя с невалидным email
+    @allure.severity(allure.severity_level.NORMAL)
     def test_edit_with_invalid_email(self):
         # EDIT
         new_email = 'ChangedEmailexample.com'
@@ -121,6 +141,8 @@ class TestUserEdit(BaseCase):
 
 
     # негативный тест - редактирование авторизованным пользователем самого себя с невалидным firstName
+    @allure.issue('https://company.atlassian.net/browse/1003', 'Требования к firstName юзеров')
+    @allure.severity(allure.severity_level.MINOR)
     def test_edit_with_invalid_firstName(self):
         # EDIT
         new_firstName = 'N'
